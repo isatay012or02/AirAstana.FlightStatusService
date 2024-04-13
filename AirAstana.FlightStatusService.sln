@@ -6,12 +6,24 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CA0199F0-FDE2-4EB6-B88C-1DC09539DD38}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirAstanaFlightStatusService.Api", "src\AirAstanaFlightStatusService.Api\AirAstanaFlightStatusService.Api.csproj", "{B90A40DF-5646-432C-9788-FCC7BFA653D3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D06087A8-D001-493D-8984-5EE55E1F5A9C} = {D06087A8-D001-493D-8984-5EE55E1F5A9C}
+		{16CBCE73-8737-47C2-A44C-8BC4E252C962} = {16CBCE73-8737-47C2-A44C-8BC4E252C962}
+		{39F8F542-563E-48D0-B894-358C78960F58} = {39F8F542-563E-48D0-B894-358C78960F58}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirAstanaFlightStatusService.Application", "src\AirAstanaFlightStatusService.Application\AirAstanaFlightStatusService.Application.csproj", "{D06087A8-D001-493D-8984-5EE55E1F5A9C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{16CBCE73-8737-47C2-A44C-8BC4E252C962} = {16CBCE73-8737-47C2-A44C-8BC4E252C962}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirAstanaFlightStatusService.Domain", "src\AirAstanaFlightStatusService.Domain\AirAstanaFlightStatusService.Domain.csproj", "{16CBCE73-8737-47C2-A44C-8BC4E252C962}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirAstanaFlightStatusService.Infrastructure", "src\AirAstanaFlightStatusService.Infrastructure\AirAstanaFlightStatusService.Infrastructure.csproj", "{39F8F542-563E-48D0-B894-358C78960F58}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D06087A8-D001-493D-8984-5EE55E1F5A9C} = {D06087A8-D001-493D-8984-5EE55E1F5A9C}
+		{16CBCE73-8737-47C2-A44C-8BC4E252C962} = {16CBCE73-8737-47C2-A44C-8BC4E252C962}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C7DE721A-09D6-4CFB-9F7A-33B4BC876886}"
 EndProject
