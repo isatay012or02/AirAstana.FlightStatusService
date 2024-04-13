@@ -1,10 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using AirAstanaFlightStatusService.Domain.Common.Enums;
 
 namespace AirAstanaFlightStatusService.Domain.Entities;
 
+[Table(name: "Flight", Schema = "public")]
 public class Flight
 {
-    public int Id { get; set; } //Primary Key
+    [Key]
+    public int Id { get; set; }
     
     public string? Origin { get; set; }
     

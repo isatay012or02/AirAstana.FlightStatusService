@@ -2,12 +2,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using AirAstanaFlightStatusService.Api.Requests;
-using Microsoft.AspNetCore.Identity;
+using AirAstanaFlightStatusService.Application.Flights.Commands.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AirAstanaFlightStatusService.Api.Controllers.v1;
 
+/// <summary>
+/// Предоставляет метод для получения токена
+/// </summary>
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
 public class AuthController : BaseController
@@ -27,10 +30,13 @@ public class AuthController : BaseController
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        if (request.UserName != "Isa" || request.Password != "test")
-            return BadRequest("Не правильный username и password");
+        var roleCode = await Mediator.Send(new GetRoleCodeByCheckUserCommand(request.UserName, request.Password));
+        if (roleCode.IsFailed)
+        {
+            return BadRequest("Не корректный имя пользователя или пароль");
+        }
         
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes("f2a1ed52710d4533bde25be6da03b6e3");
@@ -39,7 +45,7 @@ public class AuthController : BaseController
             Subject = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Name, request.UserName),
-                new Claim(ClaimTypes.Role, "Moderator")
+                new Claim(ClaimTypes.Role, roleCode.Value)
             }),
             // Время жизни токена
             Expires = DateTime.UtcNow.AddHours(1),

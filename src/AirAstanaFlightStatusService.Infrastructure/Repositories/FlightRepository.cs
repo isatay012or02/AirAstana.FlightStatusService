@@ -1,3 +1,4 @@
+using AirAstanaFlightStatusService.Application.Common.Primitives;
 using AirAstanaFlightStatusService.Application.DTO;
 using AirAstanaFlightStatusService.Application.Interfaces.Repositories;
 using AirAstanaFlightStatusService.Domain.Common.Enums;
@@ -32,9 +33,15 @@ public class FlightRepository : IFlightRepository
                 .ToListAsync();
             
         }
+        catch (DatabaseException ex)
+        {
+            _logger.LogError($"Не удалось добавить данные, ошибка на уровне базы данных. Описание: {ex.Message}");
+            return Result.Failure<List<Flight>>(DomainError.DatabaseFailed);
+        }
         catch (Exception ex)
         {
             _logger.LogError($"Ошибка при обращений на базу данных. Описание ошибки: {ex.Message}");
+            return Result.Failure<List<Flight>>(DomainError.DatabaseFailed);
         }
         
         return Result.Success(result);
@@ -55,11 +62,13 @@ public class FlightRepository : IFlightRepository
             {
                 transaction.Rollback();
                 _logger.LogError($"Не удалось добавить данные, ошибка на уровне базы данных. Описание: {ex.Message}");
+                return Result.Failure(DomainError.DatabaseFailed);
             }
             catch (Exception ex)
             {
                 transaction.Rollback();
                 _logger.LogError($"Не удалось добавить данные в базу даных. Описание ошибки: {ex.Message}");
+                return Result.Failure(DomainError.DatabaseFailed);
             }
         }
 
@@ -87,11 +96,13 @@ public class FlightRepository : IFlightRepository
             {
                 transaction.Rollback();
                 _logger.LogError($"Не удалось добавить данные, ошибка на уровне базы данных. Описание: {ex.Message}");
+                return Result.Failure(DomainError.DatabaseFailed);
             }
             catch (Exception ex)
             {
                 transaction.Rollback();
                 _logger.LogError($"Не удалось добавить данные в базу даных. Описание ошибки: {ex.Message}");
+                return Result.Failure(DomainError.DatabaseFailed);
             }
         }
 

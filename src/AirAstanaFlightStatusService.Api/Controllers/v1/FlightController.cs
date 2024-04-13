@@ -1,5 +1,7 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 using AirAstanaFlightStatusService.Application.DTO;
 using AirAstanaFlightStatusService.Application.Flights.Commands;
 using AirAstanaFlightStatusService.Application.Flights.Queries;
@@ -9,6 +11,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace AirAstanaFlightStatusService.Api.Controllers.v1;
 
+/// <summary>
+/// Предоставляет методы для работы с рейсами
+/// </summary>
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
 public class FlightController : BaseController
@@ -45,6 +50,8 @@ public class FlightController : BaseController
     [ProducesResponseType(statusCode: (int)HttpStatusCode.InternalServerError, type: typeof(ProblemDetails))]
     public async Task<IActionResult> AddFlight([FromBody] FlightDto request)
     {
+        //var (userId, userName) = GetTokenData();
+        
         var result = await Mediator.Send(new AddFlightCommand(request.Id, request.Origin, request.Distination, request.Departure, request.Arrival, request.Status));
         return result.IsFailed ? ProblemResponse(result.Error) : Ok();
     }
@@ -64,4 +71,23 @@ public class FlightController : BaseController
         var result = await Mediator.Send(new EditFlightCommand(id, status));
         return result.IsFailed ? ProblemResponse(result.Error) : Ok();
     }
+
+    // private (string, string) GetTokenData()
+    // {
+    //     var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+    //     if (authorizationHeader == null || !authorizationHeader.StartsWith("Bearer ")) 
+    //         return (string.Empty, string.Empty);
+    //
+    //     var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+    //
+    //     var handler = new JwtSecurityTokenHandler();
+    //     var tokenS = handler.ReadJwtToken(token);
+    //
+    //     var claims = tokenS.Claims;
+    //     var userId = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+    //     var userName = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value;
+    //     var userRole = claims.FirstOrDefault(x => x.Type == ClaimTypes.Role).Value;
+    //
+    //     return (userId, userName);
+    // }
 }
