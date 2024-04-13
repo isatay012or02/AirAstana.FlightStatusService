@@ -39,7 +39,7 @@ public class FlightController : BaseController
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    [Authorize("Moderator")]
+    [Authorize(Roles = "Moderator")]
     [HttpPost("")]
     [ProducesResponseType(statusCode: (int)HttpStatusCode.OK, type: typeof(List<Flight>))]
     [ProducesResponseType(statusCode: (int)HttpStatusCode.InternalServerError, type: typeof(ProblemDetails))]
