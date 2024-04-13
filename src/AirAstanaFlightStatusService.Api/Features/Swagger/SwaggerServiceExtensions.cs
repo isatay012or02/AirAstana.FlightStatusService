@@ -1,5 +1,7 @@
 using System.Reflection;
+using AirAstanaFlightStatusService.Api.Controllers;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace AirAstanaFlightStatusService.Api.Features.Swagger;
@@ -22,7 +24,35 @@ public static class SwaggerServiceExtensions
     {
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
 
-        services.AddSwaggerGen(/*options => { options.AddXmlComment(typeof(BaseController).Assembly); }*/);
+        services.AddSwaggerGen(options =>
+        {
+            options.AddXmlComment(typeof(BaseController).Assembly);
+            
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "API для получению данных о статусе рейсов", Version = "v1" });
+            
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "Заголовок авторизации с использованием схемы Bearer. Пример: \"Bearer {token}\"",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] {}
+                }
+            });
+        });
 
         services.AddSwaggerGenNewtonsoftSupport();
 

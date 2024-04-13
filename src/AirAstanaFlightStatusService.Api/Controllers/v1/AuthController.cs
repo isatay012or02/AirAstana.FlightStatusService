@@ -21,6 +21,11 @@ public class AuthController : BaseController
         _logger = logger;
     }
 
+    /// <summary>
+    /// Метод получения токена по username и password
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
