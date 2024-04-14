@@ -2,7 +2,7 @@ using AirAstanaFlightStatusService.Application.Interfaces.Repositories;
 using KDS.Primitives.FluentResult;
 using MediatR;
 
-namespace AirAstanaFlightStatusService.Application.Flights.Commands.Auth;
+namespace AirAstanaFlightStatusService.Application.Auths.Queries;
 
 public class GetRoleCodeByCheckUserCommandHandler : IRequestHandler<GetRoleCodeByCheckUserCommand, Result<string>>
 {

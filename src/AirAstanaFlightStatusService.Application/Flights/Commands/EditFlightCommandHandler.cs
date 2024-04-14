@@ -15,11 +15,7 @@ public class EditFlightCommandHandler : IRequestHandler<EditFlightCommand, Resul
     
     public async Task<Result> Handle(EditFlightCommand request, CancellationToken cancellationToken)
     {
-        var result = await _repository.UpdateFlight(request.Id, request.Status);
-        if (result.IsFailed)
-        {
-            
-        }
+        var result = await _repository.UpdateFlight(request.Id, request.Status, request.UserName);
 
         return result;
     }

@@ -31,8 +31,9 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection ConfigureInfrastructureServices(this IServiceCollection services)
     {
-        services.AddScoped<IFlightRepository, FlightRepository>();
         services.AddScoped<IDataContext, DataContext>();
+        services.AddScoped<IFlightRepository, FlightRepository>();
+        services.AddScoped<IAuthRepository, AuthRepository>();
 
         return services;
     }

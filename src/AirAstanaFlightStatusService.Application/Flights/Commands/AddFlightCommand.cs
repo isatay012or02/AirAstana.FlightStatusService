@@ -6,7 +6,7 @@ namespace AirAstanaFlightStatusService.Application.Flights.Commands;
 
 public class AddFlightCommand : IRequest<Result>
 {
-    public AddFlightCommand(int id, string origin, string destination, DateTimeOffset departure, DateTimeOffset arrival, Status status)
+    public AddFlightCommand(int id, string origin, string destination, DateTimeOffset departure, DateTimeOffset arrival, Status status, string userName)
     {
         Id = id;
         Origin = origin;
@@ -14,6 +14,7 @@ public class AddFlightCommand : IRequest<Result>
         Departure = departure;
         Arrival = arrival;
         Status = status;
+        UserName = userName;
     }
     
     public int Id { get; private set; }
@@ -22,4 +23,5 @@ public class AddFlightCommand : IRequest<Result>
     public DateTimeOffset Departure { get; private set; }
     public DateTimeOffset Arrival { get; private set; }
     public Status Status { get; private set; }
+    public string UserName { get; set; }
 }

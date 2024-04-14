@@ -7,7 +7,7 @@ namespace AirAstanaFlightStatusService.Application.Interfaces.Repositories;
 
 public interface IFlightRepository
 {
-    Task<Result<List<Flight>>> GetFlightList(DateTimeOffset arrival);
+    Task<Result<List<Flight>>> GetFlightList(string origin, string destination, string userName);
     Task<Result> AddFlight(FlightDto request);
-    Task<Result> UpdateFlight(int id, Status status);
+    Task<Result> UpdateFlight(int id, Status status, string userName);
 }

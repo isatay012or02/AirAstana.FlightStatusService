@@ -28,14 +28,17 @@ public class FlightController : BaseController
     /// <summary>
     /// Метод для получения списка рейсов 
     /// </summary>
-    /// <param name="arrival"></param>
+    /// <param name="origin"></param>
+    /// <param name="destination"></param>
     /// <returns></returns>
     [HttpGet("list")]
     [ProducesResponseType(statusCode: (int)HttpStatusCode.OK, type: typeof(List<Flight>))]
     [ProducesResponseType(statusCode: (int)HttpStatusCode.InternalServerError, type: typeof(ProblemDetails))]
-    public async Task<IActionResult> GetFlightList(DateTimeOffset arrival)
+    public async Task<IActionResult> GetFlightList(string origin, string destination)
     {
-        var result = await Mediator.Send(new GetFlightListQuery(arrival));
+        var userName = GetTokenData();
+        
+        var result = await Mediator.Send(new GetFlightListQuery(origin, destination, userName));
         return result.IsFailed ? ProblemResponse(result.Error) : Ok(result.Value);
     }
     
@@ -50,9 +53,9 @@ public class FlightController : BaseController
     [ProducesResponseType(statusCode: (int)HttpStatusCode.InternalServerError, type: typeof(ProblemDetails))]
     public async Task<IActionResult> AddFlight([FromBody] FlightDto request)
     {
-        //var (userId, userName) = GetTokenData();
+        var userName = GetTokenData();
         
-        var result = await Mediator.Send(new AddFlightCommand(request.Id, request.Origin, request.Distination, request.Departure, request.Arrival, request.Status));
+        var result = await Mediator.Send(new AddFlightCommand(request.Id, request.Origin, request.Distination, request.Departure, request.Arrival, request.Status, userName));
         return result.IsFailed ? ProblemResponse(result.Error) : Ok();
     }
     
@@ -68,26 +71,27 @@ public class FlightController : BaseController
     [ProducesResponseType(statusCode: (int)HttpStatusCode.InternalServerError, type: typeof(ProblemDetails))]
     public async Task<IActionResult> EditFlight(int id, Status status)
     {
-        var result = await Mediator.Send(new EditFlightCommand(id, status));
+        var userName = GetTokenData();
+        
+        var result = await Mediator.Send(new EditFlightCommand(id, status, userName));
         return result.IsFailed ? ProblemResponse(result.Error) : Ok();
     }
 
-    // private (string, string) GetTokenData()
-    // {
-    //     var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-    //     if (authorizationHeader == null || !authorizationHeader.StartsWith("Bearer ")) 
-    //         return (string.Empty, string.Empty);
-    //
-    //     var token = authorizationHeader.Substring("Bearer ".Length).Trim();
-    //
-    //     var handler = new JwtSecurityTokenHandler();
-    //     var tokenS = handler.ReadJwtToken(token);
-    //
-    //     var claims = tokenS.Claims;
-    //     var userId = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-    //     var userName = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value;
-    //     var userRole = claims.FirstOrDefault(x => x.Type == ClaimTypes.Role).Value;
-    //
-    //     return (userId, userName);
-    // }
+    private string GetTokenData()
+    {
+        var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+        if (authorizationHeader == null || !authorizationHeader.StartsWith("Bearer ")) 
+            return string.Empty;
+    
+        var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+    
+        var handler = new JwtSecurityTokenHandler();
+        var tokenS = handler.ReadJwtToken(token);
+    
+        var claims = tokenS.Claims;
+        var userName = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value;
+        var userRole = claims.FirstOrDefault(x => x.Type == ClaimTypes.Role).Value;
+    
+        return userName;
+    }
 }

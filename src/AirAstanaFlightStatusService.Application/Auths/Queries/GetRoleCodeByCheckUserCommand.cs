@@ -1,7 +1,7 @@
 using KDS.Primitives.FluentResult;
 using MediatR;
 
-namespace AirAstanaFlightStatusService.Application.Flights.Commands.Auth;
+namespace AirAstanaFlightStatusService.Application.Auths.Queries;
 
 public class GetRoleCodeByCheckUserCommand : IRequest<Result<string>>
 {

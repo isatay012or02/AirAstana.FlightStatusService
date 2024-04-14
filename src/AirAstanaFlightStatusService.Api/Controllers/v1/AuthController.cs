@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using AirAstanaFlightStatusService.Api.Requests;
-using AirAstanaFlightStatusService.Application.Flights.Commands.Auth;
+using AirAstanaFlightStatusService.Application.Auths.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -45,7 +45,7 @@ public class AuthController : BaseController
             Subject = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Name, request.UserName),
-                new Claim(ClaimTypes.Role, roleCode.Value)
+                new Claim(ClaimTypes.Role, "Moderator")
             }),
             // Время жизни токена
             Expires = DateTime.UtcNow.AddHours(1),

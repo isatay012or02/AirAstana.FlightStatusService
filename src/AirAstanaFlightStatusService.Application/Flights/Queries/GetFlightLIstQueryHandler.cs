@@ -18,11 +18,7 @@ public class GetFlightLIstQueryHandler : IRequestHandler<GetFlightListQuery, Res
 
     public async Task<Result<List<Flight>>> Handle(GetFlightListQuery request, CancellationToken cancellationToken)
     {
-        var result = await _repository.GetFlightList(request.Arrival);
-        if (result.IsFailed)
-        {
-            return null!;
-        }
+        var result = await _repository.GetFlightList(request.Origin, request.Destination, request.UserName);
 
         return result;
     }

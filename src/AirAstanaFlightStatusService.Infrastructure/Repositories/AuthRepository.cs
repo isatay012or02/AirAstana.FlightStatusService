@@ -31,10 +31,15 @@ public class AuthRepository : IAuthRepository
                     role => role.Id,
                     (user, role) => role.Code)
                 .FirstOrDefaultAsync();
+            if (roleCode == string.Empty)
+            {
+                _logger.LogError($"Не удалось получить данные по запросу.");
+                return Result.Failure<string>(DomainError.NotFound);
+            }
         }
         catch (DatabaseException ex)
         {
-            _logger.LogError($"Не удалось добавить данные, ошибка на уровне базы данных. Описание: {ex.Message}");
+            _logger.LogError($"Ошибка на уровне базы данных. Описание: {ex.Message}");
             return Result.Failure<string>(DomainError.DatabaseFailed);
         }
         catch (Exception ex)
