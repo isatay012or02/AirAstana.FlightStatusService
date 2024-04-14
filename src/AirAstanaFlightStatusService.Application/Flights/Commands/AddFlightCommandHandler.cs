@@ -20,7 +20,7 @@ public class AddFlightCommandHandler : IRequestHandler<AddFlightCommand, Result>
     public async Task<Result> Handle(AddFlightCommand request, CancellationToken cancellationToken)
     {
         var result = await _repository.AddFlight(
-            new FlightDto(request.Id, request.Origin, request.Destination, request.Departure, request.Arrival, request.Status, request.UserName));
+            new FlightDto(request.Origin, request.Destination, request.Departure, request.Arrival, request.Status, request.UserName));
         
         return result;
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
 using AirAstanaFlightStatusService.Api.Common.Constants;
+using AirAstanaFlightStatusService.Api.Requests;
 using AirAstanaFlightStatusService.Application.DTO;
 using AirAstanaFlightStatusService.Application.Flights.Commands;
 using AirAstanaFlightStatusService.Application.Flights.Queries;
@@ -32,6 +33,7 @@ public class FlightController : BaseController
     /// <param name="origin"></param>
     /// <param name="destination"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet("list")]
     [ProducesResponseType(statusCode: (int)HttpStatusCode.OK, type: typeof(List<Flight>))]
     [ProducesResponseType(statusCode: (int)HttpStatusCode.InternalServerError, type: typeof(ProblemDetails))]
@@ -52,11 +54,11 @@ public class FlightController : BaseController
     [HttpPost("")]
     [ProducesResponseType(statusCode: (int)HttpStatusCode.OK, type: typeof(List<Flight>))]
     [ProducesResponseType(statusCode: (int)HttpStatusCode.InternalServerError, type: typeof(ProblemDetails))]
-    public async Task<IActionResult> AddFlight([FromBody] FlightDto request)
+    public async Task<IActionResult> AddFlight([FromBody] AddFlightRequest request)
     {
         var userName = GetTokenData();
         
-        var result = await Mediator.Send(new AddFlightCommand(request.Id, request.Origin, request.Distination, request.Departure, request.Arrival, request.Status, userName));
+        var result = await Mediator.Send(new AddFlightCommand(request.Origin, request.Destination, request.Departure, request.Arrival, request.Status, userName));
         return result.IsFailed ? ProblemResponse(result.Error) : Ok();
     }
     

@@ -12,7 +12,7 @@ namespace AirAstanaFlightStatusService.Api.Controllers.v1;
 /// <summary>
 /// Предоставляет метод для получения токена
 /// </summary>
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/auth")]
 [ApiVersion("1.0")]
 public class AuthController : BaseController
 {
