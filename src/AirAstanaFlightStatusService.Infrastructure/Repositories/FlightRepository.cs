@@ -60,39 +60,33 @@ public class FlightRepository : IFlightRepository
 
     public async Task<Result> AddFlight(FlightDto request)
     {
-        using (var transaction = _dataContext.Database.BeginTransaction())
+        try
         {
-            try
+            var model = new Flight
             {
-                var model = new Flight
-                {
-                    Origin = request.Origin,
-                    Destination = request.Destination,
-                    Arrival = request.Arrival,
-                    Departure = request.Departure,
-                    Status = request.Status
-                };
+                Origin = request.Origin,
+                Destination = request.Destination,
+                Arrival = request.Arrival,
+                Departure = request.Departure,
+                Status = request.Status
+            };
                 
-                await _dataContext.AddAsync(model);
-                await _dataContext.SaveChangesAsync();
-
-                transaction.Commit();
-            }
-            catch (DatabaseException ex)
-            {
-                transaction.Rollback();
-                _logger.LogError("{Message} {Action} {UserName} {Date} {Exception}",
-                    "Ошибка при обращений на базу данных", nameof(AddFlight), request.UserName, DateTime.Now, ex.Message);
-                return Result.Failure(DomainError.DatabaseFailed);
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                _logger.LogError("{Message} {Action} {UserName} {Date} {Exception}",
-                    "Не удалось добавить данные в базу даных", nameof(AddFlight), request.UserName, DateTime.Now, ex.Message);
-                return Result.Failure(DomainError.DatabaseFailed);
-            }
+            await _dataContext.AddAsync(model);
+            await _dataContext.SaveChangesAsync();
         }
+        catch (DatabaseException ex)
+        {
+            _logger.LogError("{Message} {Action} {UserName} {Date} {Exception}",
+                "Ошибка при обращений на базу данных", nameof(AddFlight), request.UserName, DateTime.Now, ex.Message);
+            return Result.Failure(DomainError.DatabaseFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{Message} {Action} {UserName} {Date} {Exception}",
+                "Не удалось добавить данные в базу даных", nameof(AddFlight), request.UserName, DateTime.Now, ex.Message);
+            return Result.Failure(DomainError.DatabaseFailed);
+        }
+            
         _logger.LogInformation("{Message} {Action} {UserName} {Date}", 
             "Данные успешно добавлены", nameof(AddFlight), request.UserName, DateTime.Now);
 
@@ -101,40 +95,34 @@ public class FlightRepository : IFlightRepository
 
     public async Task<Result> UpdateFlight(int id, Status status, string userName)
     {
-        using (var transaction = _dataContext.Database.BeginTransaction())
+        try
         {
-            try
+            var updateData = await _dataContext.Flights
+                .Where(f => f.Id == id)
+                .FirstOrDefaultAsync();
+            if (updateData is null)
             {
-                var updateData = await _dataContext.Flights
-                    .Where(f => f.Id == id)
-                    .FirstOrDefaultAsync();
-                if (updateData is null)
-                {
-                    _logger.LogError("{Message} {Action} {UserName} {Date}",
-                        "е удалось получить данные по запросу", nameof(UpdateFlight), userName, DateTime.Now);
-                    return Result.Failure(DomainError.NotFound);   
-                }
+                _logger.LogError("{Message} {Action} {UserName} {Date}",
+                    "е удалось получить данные по запросу", nameof(UpdateFlight), userName, DateTime.Now);
+                return Result.Failure(DomainError.NotFound);   
+            }
 
-                updateData.Status = status;
-                await _dataContext.SaveChangesAsync();
-
-                transaction.Commit();
-            }
-            catch (DatabaseException ex)
-            {
-                transaction.Rollback();
-                _logger.LogError("{Message} {Action} {UserName} {Date} {Exception}",
-                    "Ошибка при обращений на базу данных", nameof(UpdateFlight), userName, DateTime.Now, ex.Message);
-                return Result.Failure(DomainError.DatabaseFailed);
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                _logger.LogError("{Message} {Action} {UserName} {Date} {Exception}",
-                    "Не удалось добавить данные в базу даных", nameof(UpdateFlight), userName, DateTime.Now, ex.Message);
-                return Result.Failure(DomainError.DatabaseFailed);
-            }
+            updateData.Status = status;
+            await _dataContext.SaveChangesAsync();
         }
+        catch (DatabaseException ex)
+        {
+            _logger.LogError("{Message} {Action} {UserName} {Date} {Exception}",
+                "Ошибка при обращений на базу данных", nameof(UpdateFlight), userName, DateTime.Now, ex.Message);
+            return Result.Failure(DomainError.DatabaseFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{Message} {Action} {UserName} {Date} {Exception}",
+                "Не удалось добавить данные в базу даных", nameof(UpdateFlight), userName, DateTime.Now, ex.Message);
+            return Result.Failure(DomainError.DatabaseFailed);
+        }
+        
         _logger.LogInformation("{Message} {Action} {UserName} {Date}", 
             "Данные успешно добавлены", nameof(UpdateFlight), userName, DateTime.Now);
 
