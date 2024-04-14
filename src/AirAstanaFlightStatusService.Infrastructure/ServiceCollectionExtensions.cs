@@ -29,6 +29,13 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection ConfigureInfrastructureRedisCache(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("Redis");
+        services.AddStackExchangeRedisCache(options => { options.Configuration = connectionString; });
+        return services;
+    }
+
     public static IServiceCollection ConfigureInfrastructureServices(this IServiceCollection services)
     {
         services.AddScoped<IDataContext, DataContext>();

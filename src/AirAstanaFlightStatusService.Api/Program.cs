@@ -29,6 +29,7 @@ try
 
     builder.Services
         .ConfigureInfrastructurePersistence(builder.Configuration, builder.Environment.EnvironmentName)
+        .ConfigureInfrastructureRedisCache(builder.Configuration)
         .ConfigureInfrastructureServices();
     
     builder.Services.AddAuthentication("Bearer")

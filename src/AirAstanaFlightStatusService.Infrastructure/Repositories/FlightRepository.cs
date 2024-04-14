@@ -7,7 +7,10 @@ using AirAstanaFlightStatusService.Infrastructure.Common.Exceptions;
 using AirAstanaFlightStatusService.Infrastructure.Persistence;
 using KDS.Primitives.FluentResult;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace AirAstanaFlightStatusService.Infrastructure.Repositories;
 
@@ -15,19 +18,27 @@ public class FlightRepository : IFlightRepository
 {
     private readonly DataContext _dataContext;
     private readonly ILogger<FlightRepository> _logger;
+    private readonly IDistributedCache _cache;
+    private readonly IConfiguration _configuration;
 
-    public FlightRepository(DataContext dataContext, ILogger<FlightRepository> logger)
+    public FlightRepository(DataContext dataContext, ILogger<FlightRepository> logger, IDistributedCache cache, IConfiguration configuration)
     {
         _dataContext = dataContext;
         _logger = logger;
+        _cache = cache;
+        _configuration = configuration;
     }
     
     public async Task<Result<List<Flight>>> GetFlightList(string origin, string destination, string userName)
     {
-          
         List<Flight> result = null!;
         try
         {
+            var cacheKey = _configuration["RedisOptions:GetFlightList"] + userName;
+            var cacheFlightList = await _cache.GetStringAsync(cacheKey);
+            if (!string.IsNullOrEmpty(cacheFlightList))
+                return Result.Success(JsonConvert.DeserializeObject<List<Flight>>(cacheFlightList));
+            
             result = await _dataContext.Flights
                 .Where(f => f.Origin == origin && f.Destination == destination)
                 .OrderBy(f => f.Arrival)
@@ -38,7 +49,10 @@ public class FlightRepository : IFlightRepository
                     "Не удалось получить данные по запросу", nameof(GetFlightList), DateTime.Now);
                 return Result.Failure<List<Flight>>(DomainError.NotFound);
             }
-            
+
+            var expirationTime = int.Parse(_configuration["RedisOptions:ExpirationInSecond"]);
+            await _cache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(result),
+                new DistributedCacheEntryOptions { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(expirationTime)});
         }
         catch (DatabaseException ex)
         {

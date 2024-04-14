@@ -40,16 +40,18 @@ public class AuthController : BaseController
         }
         
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes("f2a1ed52710d4533bde25be6da03b6e3");
+        var secretKey = _configuration["AuthOptions:SecretKey"];
+        var key = Encoding.ASCII.GetBytes(secretKey);
+        var tokenLifeExpiration = int.Parse(_configuration["AuthOptions:TokenLifeExpirationInHour"]);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Name, request.UserName),
-                new Claim(ClaimTypes.Role, "Moderator")
+                new Claim(ClaimTypes.Role, _configuration["AuthOptions:RoleCode"])
             }),
             // Время жизни токена
-            Expires = DateTime.UtcNow.AddHours(1),
+            Expires = DateTime.UtcNow.AddHours(tokenLifeExpiration),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
         var token = tokenHandler.CreateToken(tokenDescriptor);
