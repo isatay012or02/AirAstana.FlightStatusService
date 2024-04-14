@@ -64,7 +64,16 @@ public class FlightRepository : IFlightRepository
         {
             try
             {
-                await _dataContext.AddAsync(request);
+                var model = new Flight
+                {
+                    Origin = request.Origin,
+                    Destination = request.Destination,
+                    Arrival = request.Arrival,
+                    Departure = request.Departure,
+                    Status = request.Status
+                };
+                
+                await _dataContext.AddAsync(model);
                 await _dataContext.SaveChangesAsync();
 
                 transaction.Commit();
