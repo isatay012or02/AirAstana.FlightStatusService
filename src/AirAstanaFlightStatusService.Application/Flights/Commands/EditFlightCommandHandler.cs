@@ -10,7 +10,7 @@ public class EditFlightCommandHandler : IRequestHandler<EditFlightCommand, Resul
 
     public EditFlightCommandHandler(IFlightRepository repository)
     {
-        _repository = _repository;
+        _repository = repository;
     }
     
     public async Task<Result> Handle(EditFlightCommand request, CancellationToken cancellationToken)
