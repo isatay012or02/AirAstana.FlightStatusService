@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AirAstanaFlightStatusService.Api.Controllers.v1;
 
+//todo по хорошему надо вынести в отдельный сервис
 /// <summary>
 /// Предоставляет метод для получения токена
 /// </summary>

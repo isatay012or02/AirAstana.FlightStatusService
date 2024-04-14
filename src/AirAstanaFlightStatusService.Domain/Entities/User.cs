@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AirAstanaFlightStatusService.Domain.Entities;
 
 [Table(name: "User", Schema = "public")]
-public class User
+public class User : Entity
 {
-    [Key]
-    public int Id { get; set; }
-    
+    [Column(name:"username")]
     public string? UserName { get; set; }
     
+    [Column(name:"password")]
     public string? Password { get; set; }
     
+    [Column(name:"roleid")]
     public int RoleId { get; set; }
 }
