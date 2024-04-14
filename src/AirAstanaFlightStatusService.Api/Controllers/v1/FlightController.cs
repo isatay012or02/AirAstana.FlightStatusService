@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
+using AirAstanaFlightStatusService.Api.Common.Constants;
 using AirAstanaFlightStatusService.Application.DTO;
 using AirAstanaFlightStatusService.Application.Flights.Commands;
 using AirAstanaFlightStatusService.Application.Flights.Queries;
@@ -76,7 +77,12 @@ public class FlightController : BaseController
         var result = await Mediator.Send(new EditFlightCommand(id, status, userName));
         return result.IsFailed ? ProblemResponse(result.Error) : Ok();
     }
-
+    
+    // todo по хорошему надо вынести в отедльную либу
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     private string GetTokenData()
     {
         var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
@@ -89,8 +95,8 @@ public class FlightController : BaseController
         var tokenS = handler.ReadJwtToken(token);
     
         var claims = tokenS.Claims;
-        var userName = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value;
-        var userRole = claims.FirstOrDefault(x => x.Type == ClaimTypes.Role).Value;
+        var userName = claims.FirstOrDefault(x => x.Type == ClaimConstant.Name)?.Value;
+        var userRole = claims.FirstOrDefault(x => x.Type == ClaimConstant.Role)?.Value;
     
         return userName;
     }
